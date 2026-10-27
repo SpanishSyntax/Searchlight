@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "searchlight"
+version = "0.1.0"
+description = "Interactive full-text PDF search, fuzzy discovery, and document preview engine"
+readme = "README.md"
+authors = [{ name = "SpanishSyntax", email = "spanishsyntax@pyritelabs.cc" }]
+license = { text = "MIT" }
+requires-python = ">=3.11"
+keywords = ["pdf", "search", "pdfgrep", "fzf", "tui", "cli", "frost", "iceberg", "viewer"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Utilities",
+  "Topic :: Text Processing :: Indexing",
+]
+dependencies = [
+  "prism",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0",
+]
+
+[project.scripts]
+searchlight = "searchlight.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["searchlight*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
