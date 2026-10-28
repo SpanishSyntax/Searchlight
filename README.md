@@ -44,6 +44,35 @@ searchlight "gradient descent" -n
 
 # Machine-readable output for scripts and AI tooling
 searchlight "convergence" --json
+
+# Launch Model Context Protocol (MCP) Server over stdio
+searchlight mcp
+```
+
+---
+
+## 🔌 Model Context Protocol (MCP) Server
+
+Searchlight provides a native MCP server exposing atomic PDF utilities over standard I/O (stdio). It integrates seamlessly with Antigravity, Claude Desktop, and OpenCode.
+
+### Tools Exposed
+
+1. **`searchlight_search`**: Full-text regex and pattern querying across PDF files with line numbers, page indexes, and context lines.
+2. **`searchlight_info`**: Detailed PDF metadata extraction (title, author, total pages, paper size, encryption status, PDF version).
+3. **`searchlight_extract_text`**: Plain text extraction across an entire document or specific page ranges (`first_page` to `last_page`).
+4. **`searchlight_open_viewer`**: Launch local document viewer directly positioned at a specific page.
+
+### Antigravity Configuration (`~/.gemini/config/mcp_config.json`)
+
+```json
+{
+  "mcpServers": {
+    "searchlight": {
+      "command": "searchlight",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
 ---

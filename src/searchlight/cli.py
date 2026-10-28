@@ -22,6 +22,7 @@ def print_help() -> None:
 
 {ui.blue("Usage:")}
   searchlight <search-term> [path] [options]    Search PDFs and open interactive picker
+  searchlight mcp                               Start Model Context Protocol (MCP) stdio server
   searchlight [options]                         Interactive search wizard
 
 {ui.blue("Options:")}
@@ -116,6 +117,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     if any(a in ("-V", "-v", "--version", "version") for a in raw_args):
         print(f"{ui.badge()} {ui.bold(f'v{__version__}')}")
         return 0
+
+    if raw_args and raw_args[0] in ("mcp", "serve") or "--mcp" in raw_args:
+        from searchlight.mcp import main as mcp_main
+        return mcp_main()
 
     parser = _build_parser(user_cfg)
     args = parser.parse_args(raw_args)

@@ -44,13 +44,15 @@
         ];
 
         postFixup = ''
-          wrapProgram $out/bin/searchlight \
-            --prefix PATH : ${lib.makeBinPath [
-            pkgs.pdfgrep
-            pkgs.fzf
-            pkgs.xdg-utils
-            pkgs.poppler-utils
-          ]}
+          for prog in $out/bin/*; do
+            wrapProgram "$prog" \
+              --prefix PATH : ${lib.makeBinPath [
+              pkgs.pdfgrep
+              pkgs.fzf
+              pkgs.xdg-utils
+              pkgs.poppler-utils
+            ]}
+          done
         '';
 
         nativeCheckInputs = [
@@ -90,6 +92,10 @@
         searchlight = {
           type = "app";
           program = "${searchlightPackage}/bin/searchlight";
+        };
+        mcp = {
+          type = "app";
+          program = "${searchlightPackage}/bin/searchlight-mcp";
         };
       };
 

@@ -32,6 +32,7 @@ test = [
 
 [project.scripts]
 searchlight = "searchlight.cli:main"
+searchlight-mcp = "searchlight.mcp:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
