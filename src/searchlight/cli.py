@@ -18,6 +18,30 @@ from searchlight.viewer import detect_viewer, open_pdf
 
 def print_help() -> None:
     """Prints colored usage instructions matching Frost iceberg standards."""
+    if ui.is_agent:
+        print(f"""Searchlight v{__version__} - Interactive PDF Search & Discovery Engine
+Usage: searchlight <query> [path] [options]
+       searchlight mcp
+
+Options:
+  -A, --agent            Compact machine/agent friendly output mode
+  --json                 Output search results as JSON to stdout
+  -d, --dir DIR          Target directory or PDF file to search (default: .)
+  -r, --recursive        Recursively scan all subdirectories for PDF files
+  --no-recursive         Search only the immediate directory
+  -i, --ignore-case      Case-insensitive pattern matching (default: true)
+  -s, --case-sensitive   Enable case-sensitive matching
+  -C, --context NUM      Number of context lines before and after match
+  -m, --max-count NUM    Maximum matches per document (default: 50)
+  -p, --page NUM         Search only a specific page number
+  -n, --dry-run          Print all matches without opening an interactive picker
+  --color MODE           Color output mode: auto, always, never
+  --no-color             Disable colored output
+  -h, --help             Show this help message and exit
+  -V, -v, --version      Show version information and exit
+""")
+        return
+
     print(f"""{ui.badge()} {ui.bold("Interactive PDF Search, Fuzzy Discovery & Preview Engine")}
 
 {ui.blue("Usage:")}
@@ -115,6 +139,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if any(a in ("-V", "-v", "--version", "version") for a in raw_args):
+        if ui.is_json:
+            print(json.dumps({"app": "searchlight", "version": __version__}))
+            return 0
+        if ui.is_agent:
+            print(f"searchlight {__version__}")
+            return 0
         print(f"{ui.badge()} {ui.bold(f'v{__version__}')}")
         return 0
 
@@ -135,7 +165,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # Determine query
     query = args.query.strip()
     if not query:
-        if sys.stdin.isatty() and not args.json:
+        if sys.stdin.isatty() and not (ui.is_agent or args.json):
             query = ui.prompt("Search term or pattern")
             if not query:
                 ui.warn("Search query cannot be empty.")
@@ -160,7 +190,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ui.error(f"Search failed: {exc}")
         return 1
 
-    if args.json:
+    if args.json or ui.is_json:
         print(json.dumps(result.to_dict(), indent=2))
         return 0 if result.matches else 1
 
@@ -170,14 +200,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         return 1
 
-    # In dry-run mode or non-interactive terminal, print matches cleanly
-    if args.dry_run or not sys.stdin.isatty():
+    # In dry-run mode, non-interactive terminal, or agent mode, print matches cleanly
+    if args.dry_run or not sys.stdin.isatty() or ui.is_agent:
         for m in result.matches:
             page_str = f":p.{m.page}" if m.page is not None else ""
             print(f"{ui.cyan(m.display_path)}{ui.bold_green(page_str)}: {m.text}")
-        ui.info(
-            f"Found {ui.bold(str(result.total_matches))} match(es) across {len(result.matching_files)} document(s) in {result.elapsed_sec:.2f}s."
-        )
+        if not ui.is_agent:
+            ui.info(
+                f"Found {ui.bold(str(result.total_matches))} match(es) across {len(result.matching_files)} document(s) in {result.elapsed_sec:.2f}s."
+            )
         return 0
 
     # Interactive picker mode
