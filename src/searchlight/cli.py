@@ -119,6 +119,7 @@ def _build_parser(user_cfg: dict[str, Any]) -> argparse.ArgumentParser:
     parser.add_argument("--no-open", dest="open_viewer", action="store_false")
     parser.add_argument("-n", "--dry-run", action="store_true", help="Print matches and exit without picker.")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format.")
+    parser.add_argument("--toon", action="store_true", help="Output results in TOON format (Token-Oriented Object Notation).")
 
     add_color_args(parser)
     parser.add_argument("-h", "--help", action="store_true")
@@ -182,6 +183,32 @@ def main(argv: Sequence[str] | None = None) -> int:
     except Exception as exc:
         ui.error(f"Search failed: {exc}")
         return 1
+
+    is_toon = getattr(args, "toon", False) or getattr(ui, "is_toon", False)
+    if is_toon:
+        payload = {
+            "query": query,
+            "target": str(target_path),
+            "total_matches": result.total_matches,
+            "matches": [
+                {
+                    "file": m.display_path,
+                    "page": m.page,
+                    "text": m.text,
+                }
+                for m in result.matches
+            ],
+        }
+        if hasattr(ui, "toon"):
+            ui.toon(payload)
+        else:
+            try:
+                from prism.toon import encode_toon
+                print(encode_toon(payload))
+            except ImportError:
+                import json
+                print(json.dumps(payload, indent=2))
+        return 0 if result.matches else 1
 
     if args.json or ui.is_json:
         ui.json(result.to_dict())
