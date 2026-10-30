@@ -138,14 +138,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print_help()
         return 0
 
-    if any(a in ("-V", "-v", "--version", "version") for a in raw_args):
-        if ui.is_json:
-            print(json.dumps({"app": "searchlight", "version": __version__}))
-            return 0
-        if ui.is_agent:
-            print(f"searchlight {__version__}")
-            return 0
-        print(f"{ui.badge()} {ui.bold(f'v{__version__}')}")
+    if ui.handle_version_arg(raw_args, __version__):
         return 0
 
     if raw_args and raw_args[0] in ("mcp", "serve") or "--mcp" in raw_args:
@@ -165,7 +158,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # Determine query
     query = args.query.strip()
     if not query:
-        if sys.stdin.isatty() and not (ui.is_agent or args.json):
+        if ui.is_interactive:
             query = ui.prompt("Search term or pattern")
             if not query:
                 ui.warn("Search query cannot be empty.")
@@ -191,7 +184,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     if args.json or ui.is_json:
-        print(json.dumps(result.to_dict(), indent=2))
+        ui.json(result.to_dict())
         return 0 if result.matches else 1
 
     if not result.matches:
@@ -201,7 +194,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     # In dry-run mode, non-interactive terminal, or agent mode, print matches cleanly
-    if args.dry_run or not sys.stdin.isatty() or ui.is_agent:
+    if args.dry_run or not ui.is_interactive:
         for m in result.matches:
             page_str = f":p.{m.page}" if m.page is not None else ""
             print(f"{ui.cyan(m.display_path)}{ui.bold_green(page_str)}: {m.text}")
