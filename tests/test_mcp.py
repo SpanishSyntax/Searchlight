@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from searchlight.mcp import StdioMCPServer, TOOL_DEFINITIONS, execute_tool
+from searchlight.mcp import TOOL_DEFINITIONS, StdioMCPServer, execute_tool
 from searchlight.pdf_utils import extract_pdf_text, get_pdf_info
 
 
@@ -130,7 +130,9 @@ def test_pdf_info_mock(mock_run: MagicMock, mock_which: MagicMock, tmp_path: Pat
 
 @patch("searchlight.pdf_utils.shutil.which")
 @patch("searchlight.pdf_utils.subprocess.run")
-def test_pdf_extract_text_mock(mock_run: MagicMock, mock_which: MagicMock, tmp_path: Path):
+def test_pdf_extract_text_mock(
+    mock_run: MagicMock, mock_which: MagicMock, tmp_path: Path
+):
     dummy_pdf = tmp_path / "test.pdf"
     dummy_pdf.write_bytes(b"%PDF-1.4 dummy content")
 

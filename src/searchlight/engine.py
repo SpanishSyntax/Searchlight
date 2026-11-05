@@ -244,7 +244,9 @@ def search_pdfs(
                 matches = parse_pdfgrep_output(proc.stdout)
             elif proc.returncode == 2 and not proc.stdout:
                 # If pdfgrep errored out, fallback to poppler
-                matches = _search_with_pdftotext(query, pdf_files, ignore_case, max_count)
+                matches = _search_with_pdftotext(
+                    query, pdf_files, ignore_case, max_count
+                )
         except Exception:
             matches = _search_with_pdftotext(query, pdf_files, ignore_case, max_count)
     else:

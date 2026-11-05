@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import Any, Sequence
@@ -89,37 +88,72 @@ Options:
 
 def _build_parser(user_cfg: dict[str, Any]) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="searchlight", add_help=False)
-    parser.add_argument("query", nargs="?", default="", help="Text or regex pattern to search for.")
-    parser.add_argument("path", nargs="?", default="", help="Optional target directory or file.")
-    parser.add_argument("-d", "--dir", default="", help="Target directory (default: current directory).")
+    parser.add_argument(
+        "query", nargs="?", default="", help="Text or regex pattern to search for."
+    )
+    parser.add_argument(
+        "path", nargs="?", default="", help="Optional target directory or file."
+    )
+    parser.add_argument(
+        "-d", "--dir", default="", help="Target directory (default: current directory)."
+    )
 
     # Recursive
     rec_default = bool(user_cfg.get("recursive", True))
-    parser.add_argument("-r", "--recursive", dest="recursive", action="store_true", default=rec_default)
+    parser.add_argument(
+        "-r", "--recursive", dest="recursive", action="store_true", default=rec_default
+    )
     parser.add_argument("--no-recursive", dest="recursive", action="store_false")
 
     # Case sensitivity
     ic_default = bool(user_cfg.get("ignore_case", True))
-    parser.add_argument("-i", "--ignore-case", dest="ignore_case", action="store_true", default=ic_default)
-    parser.add_argument("-s", "--case-sensitive", dest="ignore_case", action="store_false")
+    parser.add_argument(
+        "-i",
+        "--ignore-case",
+        dest="ignore_case",
+        action="store_true",
+        default=ic_default,
+    )
+    parser.add_argument(
+        "-s", "--case-sensitive", dest="ignore_case", action="store_false"
+    )
 
     # Search tuning
-    parser.add_argument("-C", "--context", type=int, default=int(user_cfg.get("context", 0)))
-    parser.add_argument("-m", "--max-count", type=int, default=int(user_cfg.get("max_count", 50)))
+    parser.add_argument(
+        "-C", "--context", type=int, default=int(user_cfg.get("context", 0))
+    )
+    parser.add_argument(
+        "-m", "--max-count", type=int, default=int(user_cfg.get("max_count", 50))
+    )
     parser.add_argument("-p", "--page", type=int, default=None)
 
     # Viewer & fzf
     parser.add_argument("--viewer", default=str(user_cfg.get("viewer", "")))
     fzf_default = bool(user_cfg.get("use_fzf", True))
-    parser.add_argument("--fzf", dest="use_fzf", action="store_true", default=fzf_default)
+    parser.add_argument(
+        "--fzf", dest="use_fzf", action="store_true", default=fzf_default
+    )
     parser.add_argument("--no-fzf", dest="use_fzf", action="store_false")
 
     # Actions
-    parser.add_argument("-o", "--open", dest="open_viewer", action="store_true", default=True)
+    parser.add_argument(
+        "-o", "--open", dest="open_viewer", action="store_true", default=True
+    )
     parser.add_argument("--no-open", dest="open_viewer", action="store_false")
-    parser.add_argument("-n", "--dry-run", action="store_true", help="Print matches and exit without picker.")
-    parser.add_argument("--json", action="store_true", help="Output results in JSON format.")
-    parser.add_argument("--toon", action="store_true", help="Output results in TOON format (Token-Oriented Object Notation).")
+    parser.add_argument(
+        "-n",
+        "--dry-run",
+        action="store_true",
+        help="Print matches and exit without picker.",
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="Output results in JSON format."
+    )
+    parser.add_argument(
+        "--toon",
+        action="store_true",
+        help="Output results in TOON format (Token-Oriented Object Notation).",
+    )
 
     add_color_args(parser)
     parser.add_argument("-h", "--help", action="store_true")
@@ -144,6 +178,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if raw_args and raw_args[0] in ("mcp", "serve") or "--mcp" in raw_args:
         from searchlight.mcp import main as mcp_main
+
         return mcp_main()
 
     parser = _build_parser(user_cfg)
@@ -204,9 +239,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             try:
                 from prism.toon import encode_toon
+
                 print(encode_toon(payload))
             except ImportError:
                 import json
+
                 print(json.dumps(payload, indent=2))
         return 0 if result.matches else 1
 

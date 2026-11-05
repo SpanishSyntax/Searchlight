@@ -7,7 +7,6 @@ import shutil
 import subprocess
 from pathlib import Path
 
-
 VIEWER_CANDIDATES = [
     "zathura",
     "sioyek",
@@ -33,7 +32,9 @@ def detect_viewer(preferred: str | None = None) -> str:
     return "xdg-open"
 
 
-def build_viewer_command(viewer: str, file_path: Path | str, page: int | None = None) -> list[str]:
+def build_viewer_command(
+    viewer: str, file_path: Path | str, page: int | None = None
+) -> list[str]:
     """Constructs the command-line arguments to launch the viewer, jumping to page if supported."""
     file_str = str(Path(file_path).resolve())
     base_name = Path(viewer).name.lower()
@@ -51,7 +52,9 @@ def build_viewer_command(viewer: str, file_path: Path | str, page: int | None = 
     return [viewer, file_str]
 
 
-def open_pdf(file_path: Path | str, page: int | None = None, viewer: str | None = None) -> bool:
+def open_pdf(
+    file_path: Path | str, page: int | None = None, viewer: str | None = None
+) -> bool:
     """Launches the PDF document asynchronously in the background viewer."""
     target_path = Path(file_path).resolve()
     if not target_path.exists():

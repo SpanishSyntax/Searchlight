@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+
 from searchlight.cli import main
 
 

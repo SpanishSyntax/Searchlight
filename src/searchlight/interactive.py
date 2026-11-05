@@ -10,7 +10,9 @@ from searchlight.engine import SearchMatch
 from searchlight.ui import select_menu, strip_ansi, ui
 
 
-def select_match_fzf(matches: Sequence[SearchMatch], prompt: str = "Searchlight ❯ ") -> SearchMatch | None:
+def select_match_fzf(
+    matches: Sequence[SearchMatch], prompt: str = "Searchlight ❯ "
+) -> SearchMatch | None:
     """Uses fzf for fuzzy interactive filtering and selection."""
     if not matches:
         return None
@@ -63,7 +65,9 @@ def select_match_fzf(matches: Sequence[SearchMatch], prompt: str = "Searchlight 
     return None
 
 
-def select_match_menu(matches: Sequence[SearchMatch], title: str = "Select a match to open:") -> SearchMatch | None:
+def select_match_menu(
+    matches: Sequence[SearchMatch], title: str = "Select a match to open:"
+) -> SearchMatch | None:
     """Uses native Prism interactive menu when fzf is unavailable."""
     if not matches:
         return None

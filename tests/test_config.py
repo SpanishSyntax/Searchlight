@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from searchlight.config import load_user_config
 
 

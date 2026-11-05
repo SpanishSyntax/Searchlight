@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -42,7 +41,9 @@ def get_pdf_info(pdf_path: str | Path) -> dict[str, Any]:
         check=False,
     )
     if proc.returncode != 0:
-        res["error"] = proc.stderr.strip() or f"pdfinfo failed with code {proc.returncode}"
+        res["error"] = (
+            proc.stderr.strip() or f"pdfinfo failed with code {proc.returncode}"
+        )
         return res
 
     key_map = {
@@ -131,7 +132,8 @@ def extract_pdf_text(
         return {
             "status": "error",
             "file": str(path),
-            "error": proc.stderr.strip() or f"pdftotext failed with exit code {proc.returncode}",
+            "error": proc.stderr.strip()
+            or f"pdftotext failed with exit code {proc.returncode}",
         }
 
     text = proc.stdout

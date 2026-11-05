@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from searchlight.viewer import build_viewer_command, detect_viewer, open_pdf
 
 
 def test_detect_viewer_preferred(monkeypatch):
-    monkeypatch.setattr("shutil.which", lambda cmd: "/usr/bin/" + cmd if cmd == "zathura" else None)
+    monkeypatch.setattr(
+        "shutil.which", lambda cmd: "/usr/bin/" + cmd if cmd == "zathura" else None
+    )
     assert detect_viewer("zathura") == "zathura"
 
 

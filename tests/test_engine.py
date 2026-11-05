@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import pytest
-from pathlib import Path
-from searchlight.engine import SearchMatch, parse_pdfgrep_output, search_pdfs
+
+from searchlight.engine import parse_pdfgrep_output, search_pdfs
 
 
 def test_parse_pdfgrep_output_standard():
