@@ -16,74 +16,59 @@ from searchlight.viewer import detect_viewer, open_pdf
 
 
 def print_help() -> None:
-    """Prints colored usage instructions matching Frost iceberg standards."""
-    if ui.is_agent:
-        print(f"""Searchlight v{__version__} - Interactive PDF Search & Discovery Engine
-Usage: searchlight <query> [path] [options]
-       searchlight mcp
-
-Options:
-  -A, --agent            Compact machine/agent friendly output mode
-  --json                 Output search results as JSON to stdout
-  -d, --dir DIR          Target directory or PDF file to search (default: .)
-  -r, --recursive        Recursively scan all subdirectories for PDF files
-  --no-recursive         Search only the immediate directory
-  -i, --ignore-case      Case-insensitive pattern matching (default: true)
-  -s, --case-sensitive   Enable case-sensitive matching
-  -C, --context NUM      Number of context lines before and after match
-  -m, --max-count NUM    Maximum matches per document (default: 50)
-  -p, --page NUM         Search only a specific page number
-  -n, --dry-run          Print all matches without opening an interactive picker
-  --color MODE           Color output mode: auto, always, never
-  --no-color             Disable colored output
-  -h, --help             Show this help message and exit
-  -V, -v, --version      Show version information and exit
-""")
-        return
-
-    print(f"""{ui.badge()} {ui.bold("Interactive PDF Search, Fuzzy Discovery & Preview Engine")}
-
-{ui.blue("Usage:")}
-  searchlight <search-term> [path] [options]    Search PDFs and open interactive picker
-  searchlight mcp                               Start Model Context Protocol (MCP) stdio server
-  searchlight [options]                         Interactive search wizard
-
-{ui.blue("Options:")}
-  -d, --dir DIR          Target directory or PDF file to search (default: current directory)
-  -r, --recursive        Recursively scan all subdirectories for PDF files (default: true)
-  --no-recursive         Search only the immediate directory
-  -i, --ignore-case      Case-insensitive pattern matching (default: true)
-  -s, --case-sensitive   Enable case-sensitive matching
-  -C, --context NUM      Number of context lines before and after match (default: 0)
-  -m, --max-count NUM    Maximum matches per document (default: 50)
-  -p, --page NUM         Search only a specific page number
-  --viewer CMD           Custom PDF viewer executable (e.g. zathura, sioyek, okular, xdg-open)
-  --fzf                  Use fzf for interactive selection if available (default: true)
-  --no-fzf               Use native terminal menu instead of fzf
-  -o, --open             Open selected PDF in viewer (default in interactive mode)
-  --no-open              Do not open viewer after selection
-  -n, --dry-run          Print all matches without opening an interactive picker
-  --json                 Output search results as JSON to stdout
-  --color MODE           Color output mode: auto, always, never (default: auto)
-  --no-color             Disable colored output
-  -h, --help             Show this help message and exit
-  -V, -v, --version      Show version information and exit
-
-{ui.blue("Configuration:")}
-  User defaults can be defined in ~/.config/searchlight/searchlight.toml:
-    [general]
-    recursive = true
-    ignore_case = true
-    viewer = "zathura"
-    use_fzf = true
-
-{ui.blue("Examples:")}
-  searchlight "Hamiltonian"                     # Fuzzy search current dir and subdirs
-  searchlight "proof of lemma" ./papers/        # Search specific papers directory
-  searchlight "Theorem 4.2" -p 12               # Search only page 12 of PDFs
-  searchlight "Laplace" -n                      # List all matching occurrences
-  searchlight "Schrodinger" --json              # Output machine-readable JSON
-""")
+    """Prints usage instructions using Prism's declarative HelpBuilder."""
+    ui.print_help(
+        tagline="Interactive PDF Search, Fuzzy Discovery & Preview Engine",
+        version=__version__,
+        usage=[
+            "searchlight <search-term> [path] [options]",
+            "searchlight mcp",
+            "searchlight [options]",
+        ],
+        commands=[
+            ("mcp", "Start Model Context Protocol (MCP) stdio server"),
+        ],
+        options=[
+            ("-A, --agent", "Compact machine/agent friendly output mode"),
+            ("--json", "Output search results as JSON to stdout"),
+            ("--toon", "Token-Oriented Object Notation (TOON) output mode"),
+            ("-d, --dir DIR", "Target directory or PDF file to search (default: .)"),
+            ("-r, --recursive", "Recursively scan all subdirectories for PDF files"),
+            ("--no-recursive", "Search only the immediate directory"),
+            ("-i, --ignore-case", "Case-insensitive pattern matching (default: true)"),
+            ("-s, --case-sensitive", "Enable case-sensitive matching"),
+            ("-C, --context NUM", "Number of context lines before and after match"),
+            ("-m, --max-count NUM", "Maximum matches per document (default: 50)"),
+            ("-p, --page NUM", "Search only a specific page number"),
+            ("--viewer CMD", "Custom PDF viewer executable (zathura, sioyek, okular, xdg-open)"),
+            ("--fzf", "Use fzf for interactive selection if available (default: true)"),
+            ("--no-fzf", "Use native Prism searchbox instead of fzf"),
+            ("-o, --open", "Open selected PDF in viewer (default in interactive mode)"),
+            ("--no-open", "Do not open viewer after selection"),
+            ("-n, --dry-run", "Print all matches without opening an interactive picker"),
+            ("--color MODE", "Color output mode: auto, always, never"),
+            ("--no-color", "Disable colored output"),
+            ("-h, --help", "Show this help message and exit"),
+            ("-V, -v, --version", "Show version information and exit"),
+        ],
+        sections=[
+            (
+                "Configuration",
+                [
+                    ("[general]", "Defined in ~/.config/searchlight/searchlight.toml"),
+                    ("recursive = true", "Scan subdirectories by default"),
+                    ("viewer = \"zathura\"", "Default PDF viewer executable"),
+                ],
+            )
+        ],
+        examples=[
+            ("searchlight \"Hamiltonian\"", "Fuzzy search current dir and subdirs"),
+            ("searchlight \"proof of lemma\" ./papers/", "Search specific papers directory"),
+            ("searchlight \"Theorem 4.2\" -p 12", "Search only page 12 of PDFs"),
+            ("searchlight \"Laplace\" -n", "List all matching occurrences without picker"),
+            ("searchlight \"Schrodinger\" --json", "Output machine-readable JSON"),
+        ],
+    )
 
 
 def _build_parser(user_cfg: dict[str, Any]) -> argparse.ArgumentParser:

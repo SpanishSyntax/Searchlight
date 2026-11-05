@@ -68,7 +68,7 @@ def select_match_fzf(
 def select_match_menu(
     matches: Sequence[SearchMatch], title: str = "Select a match to open:"
 ) -> SearchMatch | None:
-    """Uses native Prism interactive menu when fzf is unavailable."""
+    """Uses native Prism interactive searchbox when fzf is unavailable."""
     if not matches:
         return None
 
@@ -78,11 +78,19 @@ def select_match_menu(
         page_tag = f"P.{m.page}" if m.page is not None else "P.?"
         preview = m.text[:60] + "..." if len(m.text) > 60 else m.text
         label = f"{ui.bold_cyan(f'[{page_tag}]')} {m.display_path} — {ui.dim(preview)}"
-        options.append((str(idx), label))
+        options.append((str(idx), label, m.text))
 
-    options.append(("cancel", ui.dim("Cancel and exit")))
-
-    selected_key = select_menu(title=title, options=options)
+    if hasattr(ui, "searchbox"):
+        selected_key = ui.searchbox(
+            title=title,
+            options=options,
+            prompt="Searchlight ❯ ",
+            placeholder="Type to filter matches...",
+        )
+    else:
+        selected_key = select_menu(
+            title=title, options=[(k, lbl) for k, lbl, _ in options]
+        )
     if not selected_key or selected_key == "cancel":
         return None
 

@@ -32,6 +32,16 @@ try:
         visual_len,
     )
 
+    try:
+        from prism.table import render_table
+    except ImportError:
+        render_table = None
+
+    try:
+        from prism.searchbox import searchbox
+    except ImportError:
+        searchbox = None
+
     ui = UI(app_name="searchlight", icon="🔦", badge_color="1;33")
 except ImportError:
     # Graceful fallback if prism is not yet installed in bare environments
@@ -248,6 +258,27 @@ except ImportError:
         def confirm(self, message: str, default: bool = False) -> bool:
             return confirm_input(message=message, default=default)
 
+        def searchbox(
+            self,
+            title: str = "Search",
+            options: Sequence[Any] = (),
+            prompt: str = "❯ ",
+            placeholder: str = "Type to search...",
+            limit: int = 10,
+        ) -> str | None:
+            if not options:
+                return None
+            first = options[0]
+            return first[0] if isinstance(first, (tuple, list)) else str(first)
+
+        def table(
+            self,
+            headers: Sequence[str],
+            rows: Sequence[Sequence[Any]],
+            **kwargs: Any,
+        ) -> str:
+            return "\n".join(["\t".join(headers)] + ["\t".join(map(str, r)) for r in rows])
+
     ui = FallbackUI()
     Spinner = Any  # type: ignore
     spinner_context = None  # type: ignore
@@ -262,6 +293,8 @@ __all__ = [
     "handle_color_args",
     "render_panel",
     "render_error_panel",
+    "render_table",
+    "searchbox",
     "prompt_input",
     "confirm_input",
     "select_menu",
