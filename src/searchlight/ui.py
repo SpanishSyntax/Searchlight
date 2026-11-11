@@ -1,0 +1,74 @@
+"""Terminal UI interface for Searchlight, powered directly by Prism."""
+
+from __future__ import annotations
+
+from prism import (
+    UI,
+    Spinner,
+    add_agent_args,
+    add_color_args,
+    apply_agent_args,
+    apply_color_args,
+    confirm_input,
+    detect_color_support,
+    get_agent_env,
+    get_json_env,
+    get_terminal_columns,
+    handle_agent_args,
+    handle_color_args,
+    handle_version_arg,
+    multiselect_menu,
+    prompt_input,
+    render_error_panel,
+    render_help,
+    render_panel,
+    select_menu,
+    spinner_context,
+    strip_ansi,
+    visual_len,
+)
+try:
+    from prism.searchbox import searchbox
+except ImportError:
+    searchbox = None  # type: ignore
+
+try:
+    from prism.table import render_table
+except ImportError:
+    render_table = None  # type: ignore
+
+try:
+    from prism import get_toon_env
+except ImportError:
+    get_toon_env = None  # type: ignore
+
+ui = UI(app_name="searchlight", icon="🔦", badge_color="1;33")
+
+__all__ = [
+    "ui",
+    "UI",
+    "Spinner",
+    "spinner_context",
+    "add_agent_args",
+    "apply_agent_args",
+    "handle_agent_args",
+    "add_color_args",
+    "apply_color_args",
+    "handle_color_args",
+    "handle_version_arg",
+    "render_help",
+    "render_panel",
+    "render_error_panel",
+    "render_table",
+    "searchbox",
+    "prompt_input",
+    "confirm_input",
+    "select_menu",
+    "multiselect_menu",
+    "detect_color_support",
+    "strip_ansi",
+    "visual_len",
+    "get_terminal_columns",
+    "get_agent_env",
+    "get_json_env",
+]
