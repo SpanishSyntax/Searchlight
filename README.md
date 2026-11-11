@@ -2,11 +2,16 @@
   <img src="assets/banner.png" alt="High-powered marine searchlight illuminating arctic waters from a ship deck" width="100%" />
 </p>
 
-# 🔦 Searchlight
+# Searchlight 🔦
 
-**Interactive Full-Text PDF Search, Fuzzy Discovery & Preview Engine**
+Interactive full-text PDF search, fuzzy discovery, and direct page-jumping document viewer integration.
 
-Searchlight is a crystalline, keyboard-driven document exploration engine designed for the Frost and SpanishSyntax ecosystem. Built upon `pdfgrep` and `prism`, Searchlight scans research papers, lecture notes, and documentation archives, rendering instant fuzzy pickers and launching target PDFs directly to matching page numbers in modern document viewers.
+Searchlight is a fast, keyboard-driven document exploration engine designed for research papers, lecture notes, and technical documentation archives. Built on `pdfgrep`, `poppler-utils`, and `prism`, Searchlight scans PDF collections, presents interactive fuzzy pickers, and launches target documents directly to matching page numbers in modern viewers.
+
+---
+
+> [!TIP]
+> **Documentation Site**: Detailed usage guides, complete option references, and MCP tool specifications are available on the **[Documentation Site](https://spanishsyntax.github.io/Searchlight)**.
 
 ---
 
@@ -14,33 +19,41 @@ Searchlight is a crystalline, keyboard-driven document exploration engine design
 
 > **searchlight** (`/ˈsɜːtʃ.laɪt/`) — *noun:* A powerful, high-intensity projector that casts a narrow, penetrating beam across polar blizzards and fog banks to locate distant landmarks and lost waypoints.
 
-When navigators are caught in an arctic blizzard, ordinary vision fails. Only a focused, high-candela beam can pierce the dense blowing snow to illuminate the cabin beacon or trail marker miles ahead.
+When navigators are caught in an arctic blizzard, ordinary vision fails. Dense blowing snow and zero-visibility whiteouts obscure every reference point. Only a focused, high-candela beam can pierce the storm to illuminate the harbor beacon or cabin marker miles ahead.
 
-**Searchlight cuts through vast document archives:**
-- **Blizzard Penetration**: Employs fast regex and fuzzy full-text discovery to scan dense technical papers, textbook collections, and lecture notes instantly.
-- **Direct Navigation**: Launches document viewers directly to the precise page, formula, or theorem matching your query, bypassing manual table-of-contents hunting.
+Research collections present an equivalent blizzard: hundreds of multi-page technical PDFs, proofs, and references where critical formulas and definitions are buried.
 
----
+**Searchlight cuts through dense document archives:**
 
-## ✨ Features
-
-- **Blazing Fast PDF Grep Engine**: Full-text regex and pattern querying across single files or deep directory trees using `pdfgrep` with graceful `poppler-utils` fallback.
-- **Interactive Fuzzy Navigation**: Integrated `fzf` picker with highlighted match lines, page indices, and reverse layout; native `prism` terminal UI fallback when running in minimal shells.
-- **Precision Page Jumping**: Automatically launches supported PDF viewers (`zathura`, `sioyek`, `okular`, `evince`, `xdg-open`) directly positioned at the matching page number.
-- **Deep Nix Ecosystem Integration**: Native Nix flake exporting packages, apps, overlays, NixOS modules, and Home Manager modules with complete bundled runtime dependencies (`pdfgrep`, `fzf`, `xdg-utils`, `poppler-utils`).
-- **Structured JSON & Scripting Modes**: `--json` and `--dry-run` flags for headless workflows, pipeline integrations, and MCP tool bridges.
+- **Blizzard Penetration**: Employs fast regex and full-text discovery to scan technical papers and textbook collections without pre-indexing delays.
+- **Direct Navigation**: Launches document viewers directly positioned at the exact page number matching your query, eliminating manual table-of-contents scrolling.
 
 ---
 
-## 🚀 Quick Start
+## Features
 
-### Run Directly with Nix
+- **Dual-Engine Search Pipeline**: High-performance regex and pattern querying using `pdfgrep` with graceful fallback to `poppler-utils` (`pdftotext`).
+- **Interactive Fuzzy Navigation**: Integrated `fzf` picker with highlighted match lines, page numbers, and reverse layout; native `prism` terminal UI fallback in minimal shells.
+- **Precision Page Jumping**: Automatically launches supported PDF viewers (`zathura`, `sioyek`, `okular`, `evince`, `xdg-open`) directly positioned at matching page numbers.
+- **Model Context Protocol (MCP)**: Native stdio MCP server exposing PDF search, metadata extraction, text extraction, and viewer launching to AI tools.
+- **Structured Output Formats**: Supports `--json`, `--toon`, and `--dry-run` modes for headless pipelines and automated scripts.
+- **Declarative Nix Integration**: Nix flake exporting packages, apps, overlays, NixOS modules, and Home Manager modules with complete bundled runtime dependencies (`pdfgrep`, `fzf`, `xdg-utils`, `poppler-utils`).
+
+---
+
+## Quick Start
+
+Run Searchlight directly with Nix without installing:
 
 ```bash
+# Search for Hamiltonian across current folder and subdirectories
 nix run github:SpanishSyntax/Searchlight -- "Hamiltonian"
+
+# Launch MCP server directly
+nix run github:SpanishSyntax/Searchlight#mcp
 ```
 
-### CLI Usage
+### Common CLI Invocations
 
 ```bash
 # Interactive fuzzy search across current directory and subdirectories
@@ -67,33 +80,7 @@ searchlight mcp
 
 ---
 
-## 🔌 Model Context Protocol (MCP) Server
-
-Searchlight provides a native MCP server exposing atomic PDF utilities over standard I/O (stdio). It integrates seamlessly with Antigravity, Claude Desktop, and OpenCode.
-
-### Tools Exposed
-
-1. **`searchlight_search`**: Full-text regex and pattern querying across PDF files with line numbers, page indexes, and context lines.
-2. **`searchlight_info`**: Detailed PDF metadata extraction (title, author, total pages, paper size, encryption status, PDF version).
-3. **`searchlight_extract_text`**: Plain text extraction across an entire document or specific page ranges (`first_page` to `last_page`).
-4. **`searchlight_open_viewer`**: Launch local document viewer directly positioned at a specific page.
-
-### Antigravity Configuration (`~/.gemini/config/mcp_config.json`)
-
-```json
-{
-  "mcpServers": {
-    "searchlight": {
-      "command": "searchlight",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
----
-
-## ⚙️ Options & Flags
+## CLI Options & Flags
 
 | Flag | Long Option | Description | Default |
 | :--- | :--- | :--- | :--- |
@@ -110,13 +97,15 @@ Searchlight provides a native MCP server exposing atomic PDF utilities over stan
 | `-o` | `--open` / `--no-open` | Open viewer immediately on match selection | `true` |
 | `-n` | `--dry-run` | Print matches and exit without launching picker | `false` |
 | | `--json` | Output structured search results in JSON | `false` |
+| | `--toon` | Output results in Token-Oriented Object Notation (TOON) | `false` |
+| `-A` | `--agent` | Compact machine-friendly output mode | `false` |
 | | `--color MODE` | Terminal color mode (`auto`, `always`, `never`) | `auto` |
 | `-h` | `--help` | Display usage instructions | |
 | `-V` | `--version` | Display version information | |
 
 ---
 
-## 🛠️ Configuration
+## Configuration
 
 Searchlight optionally reads user preferences from `~/.config/searchlight/searchlight.toml`:
 
@@ -133,30 +122,35 @@ color = "auto"
 
 ---
 
-## ❄️ Frost & Home Manager Integration
+## Home Manager Configuration
 
-In your Frost or NixOS Home Manager configuration:
+Add Searchlight to your `flake.nix`:
 
 ```nix
-# flake.nix
 {
   inputs = {
-    searchlight.url = "github:SpanishSyntax/Searchlight";
-    searchlight.inputs.nixpkgs.follows = "nixpkgs";
-    searchlight.inputs.prism.follows = "prism";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    searchlight = {
+      url = "github:SpanishSyntax/Searchlight";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-}
 
-# home-manager module
-{ inputs, ... }: {
-  imports = [ inputs.searchlight.homeManagerModules.default ];
-
-  programs.searchlight = {
-    enable = true;
-    settings = {
-      viewer = "zathura";
-      recursive = true;
-      ignore_case = true;
+  outputs = { self, nixpkgs, searchlight, ... }: {
+    homeConfigurations.user = home-manager.lib.homeManagerConfiguration {
+      modules = [
+        searchlight.homeManagerModules.default
+        {
+          programs.searchlight.enable = true;
+          programs.searchlight.settings = {
+            general = {
+              viewer = "zathura";
+              recursive = true;
+              ignore_case = true;
+            };
+          };
+        }
+      ];
     };
   };
 }
@@ -164,6 +158,6 @@ In your Frost or NixOS Home Manager configuration:
 
 ---
 
-## 📄 License
+## License
 
-MIT © [SpanishSyntax](https://github.com/SpanishSyntax)
+MIT © SpanishSyntax
