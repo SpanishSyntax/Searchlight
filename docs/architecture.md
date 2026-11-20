@@ -28,16 +28,14 @@ Research collections present an equivalent blizzard: hundreds of multi-page tech
 
 Searchlight implements a prioritized execution pipeline:
 
-```
-[User Query]
-     │
-     ├── Primary: `pdfgrep` (High-Performance C++ Poppler Binding)
-     │       ├── Options: -H -n -i -m <limit> -C <context> --page-range
-     │       └── Stdout parsed into SearchMatch dataclasses
-     │
-     └── Fallback: `pdftotext` (poppler-utils)
-             ├── Extracted page-by-page via form-feed delimiters (\x0c)
-             └── Regex pattern matching executed in Python
+```mermaid
+flowchart TD
+    Query["User Query"] --> Primary["Primary: pdfgrep (High-Performance C++ Poppler Binding)"]
+    Query --> Fallback["Fallback: pdftotext (poppler-utils)"]
+    Primary -->|"Options: -H -n -i -m -C --page-range"| Matches["SearchMatch Dataclasses"]
+    Fallback -->|"Form-feed page split + Python regex"| Matches
+    Matches --> Picker["Interactive Fuzzy Picker (fzf / Prism Searchbox)"]
+    Picker --> Viewer["Direct Page-Jumping PDF Viewer"]
 ```
 
 ### Primary Backend: `pdfgrep`
@@ -68,12 +66,12 @@ When a match is selected, Searchlight inspects installed system viewers and tran
 
 | Viewer Executable | Page-Jumping Flag Syntax | Process Model |
 | :--- | :--- | :--- |
-| **`zathura`** | `zathura -P <page> <file>` | Spawned in new session (`start_new_session=True`) |
-| **`sioyek`** | `sioyek --page <page> <file>` | Spawned in new session |
-| **`okular`** | `okular -p <page> <file>` | Spawned in new session |
-| **`evince`** | `evince -p <page> <file>` | Spawned in new session |
-| **`mupdf`** | `mupdf <file> <page>` | Spawned in new session |
-| **`xdg-open`** | `xdg-open <file>` | Default system association (page jumping unsupported) |
+| `zathura` | `zathura -P <page> <file>` | Spawned in new session (`start_new_session=True`) |
+| `sioyek` | `sioyek --page <page> <file>` | Spawned in new session |
+| `okular` | `okular -p <page> <file>` | Spawned in new session |
+| `evince` | `evince -p <page> <file>` | Spawned in new session |
+| `mupdf` | `mupdf <file> <page>` | Spawned in new session |
+| `xdg-open` | `xdg-open <file>` | Default system association (page jumping unsupported) |
 
 Viewers are spawned completely detached from the controlling terminal via `subprocess.Popen(..., start_new_session=True)`, allowing the terminal prompt to return immediately.
 
