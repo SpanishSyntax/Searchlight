@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/banner.png" alt="High-powered marine searchlight illuminating arctic waters from a ship deck" width="100%" />
-</p>
+<img src="assets/banner.png" alt="High-powered marine searchlight illuminating arctic waters from a ship deck" width="100%" />
 
 # Searchlight 🔦
 
